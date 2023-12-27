@@ -1,8 +1,6 @@
 using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AdaptivePerformance.Samsung.Android;
-using UnityEngine.Serialization;
 
 public class TouchController : MonoBehaviour
 {
