@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameController : MonoBehaviour
+public class GrayscaleController : MonoBehaviour
 {
     [SerializeField] private List<SpriteRenderer> spriteRenderers;
     [SerializeField] private TouchController touchController;
@@ -23,14 +23,14 @@ public class GameController : MonoBehaviour
         
     }
 
-    public void ShowWinner(bool isPlayerOneWin)
+    /*public void ShowWinner(bool isPlayerOneWin)
     {
         cashParticleSystem.Play();
         if (isPlayerOneWin == true)
         {
             
         }
-    }
+    }*/
 
     private IEnumerator GrayscaleRoutine(float duration, bool isGrayscale, bool isShowTextReady = false)
     {

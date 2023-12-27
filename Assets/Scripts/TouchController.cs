@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AdaptivePerformance.Samsung.Android;
+using UnityEngine.Serialization;
 
 public class TouchController : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class TouchController : MonoBehaviour
     [SerializeField] private PlayerModel playerTwo;
     [SerializeField] private TextMeshProUGUI testText;
     [SerializeField] private TextMeshProUGUI testText2;
-    [SerializeField] private GameController gameController;
+    [SerializeField] private GrayscaleController grayscaleController;
     private bool isGameStarted = false;
     private bool isPlayerTap = false;
     private int touchIdOne = -1;
@@ -32,8 +33,7 @@ public class TouchController : MonoBehaviour
 
     private void Update()
     {
-        if (isGameStarted == false)
-        {
+        if (isGameStarted == false) {
             return;
         }
         
@@ -42,7 +42,6 @@ public class TouchController : MonoBehaviour
         CheckCachedTouch(touches);
 
         CheckWinner();
-        //MovePlayerModel(touches);
     }
 
     private void CheckWinner()
@@ -51,33 +50,20 @@ public class TouchController : MonoBehaviour
         if (milliseconds > 0)
         {
             testText2.text = "Время: " + milliseconds + "  \\ Выйграл PlayerOne";
-            gameController.ShowWinner(true);
+            
+            playerOne.endAttackAnimationEvent += () =>
+            {
+                playerTwo.SetAnimState("Hit", true);
+            };
         }
         else if(milliseconds < 0)
         {
             testText2.text = "Время: " + milliseconds + "  \\ Выйграл PlayerTwo";
-            gameController.ShowWinner(false);
-        }
-    }
-
-    private void MovePlayerModel(Touch[] touches)
-    {
-        foreach (var touch in touches)
-        {
-            if (touch.fingerId == touchIdOne)
+            playerTwo.endAttackAnimationEvent += () =>
             {
-                //playerOne.UpdatePosition(touch.position);
-            }
-
-            if (touch.fingerId == touchIdTwo)
-            {
-                //playerTwo.UpdatePosition(touch.position);
-            }
+                playerOne.SetAnimState("Hit", true);
+            };
         }
-#if UNITY_EDITOR_WIN
-        //playerOne.UpdatePosition(Input.mousePosition);
-        //playerTwo.UpdatePosition(Input.mousePosition);
-#endif
     }
 
     private void CheckCachedTouch(Touch[] touches)
@@ -86,6 +72,28 @@ public class TouchController : MonoBehaviour
         {
             return;
         }
+        
+#if UNITY_EDITOR_WIN
+        if (Input.GetMouseButtonDown(0))
+        {
+            var mousePositionX = Input.mousePosition.x;
+            if (mousePositionX < 960)
+            {
+                isPlayerTap = true;
+                testText.text = "POS < 960 PlayerOne: " + mousePositionX;
+                playerOneDateTime = DateTime.Now;;
+                playerOne.SetAnimState("Attack", true);
+            }
+
+            if (mousePositionX > 960)
+            {
+                isPlayerTap = true;
+                testText.text = "POS > 960 PlayerTwo: " + mousePositionX;
+                playerTwoDateTime = DateTime.Now;;
+                playerTwo.SetAnimState("Attack", true);
+            }
+        }
+#endif
         if (touches.Length > 0)
         {
             foreach (var touch in touches)
@@ -99,6 +107,7 @@ public class TouchController : MonoBehaviour
                         testText.text = "POS < 960 PlayerOne: " + touch.position;
                         touchIdOne = touch.fingerId;
                         playerOneDateTime = DateTime.Now;;
+                        playerOne.SetAnimState("Attack", true);
                         continue;
                     }
 
@@ -108,6 +117,7 @@ public class TouchController : MonoBehaviour
                         testText.text = "POS > 960 PlayerTwo: " + touch.position;
                         touchIdTwo = touch.fingerId;
                         playerTwoDateTime = DateTime.Now;;
+                        playerTwo.SetAnimState("Attack", true);
                         continue;
                     }
                 }
