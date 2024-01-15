@@ -37,12 +37,18 @@ public class GrayscaleController : MonoBehaviour
 
     private void RandomTimeForStartGame()
     {
-        touchController.StartGame();
         float startTime = Random.Range(1.2f, 3.3f);
         Debug.Log("Random time: " + startTime);
-        StartCoroutine(GrayscaleRoutine(startTime, false));
+        StartCoroutine(ReadyGrayScaleCoroutine(startTime));
+    }
+
+    private IEnumerator ReadyGrayScaleCoroutine(float time)
+    {
+        yield return new WaitForSecondsRealtime(time);
+        StartCoroutine(DuelImageTime(1f));
+        StartCoroutine(GrayscaleRoutine(0.1f, false));
         DuelImage.StartTweener();
-        StartCoroutine(DuelImageTime(startTime));
+        touchController.StartGame();
     }
 
     private IEnumerator DuelImageTime(float time)
