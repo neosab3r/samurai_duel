@@ -1,4 +1,5 @@
 using System;
+using DefaultNamespace;
 using TMPro;
 using UnityEngine;
 
@@ -9,29 +10,28 @@ public class TouchController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI testText;
     [SerializeField] private TextMeshProUGUI testText2;
     [SerializeField] private GrayscaleController grayscaleController;
+    [SerializeField] private EndGameUIController endGameUiController;
     private bool isGameStarted = false;
     private bool isPlayerTap = false;
+    private bool isLeftPlayerTap = false;
+    private bool isRightPlayerTap = false;
+    private bool isWinnerShowed = false;
     private int touchIdOne = -1;
     private int touchIdTwo = -2;
-    private DateTime playerOneDateTime;
-    private DateTime playerTwoDateTime;
-    private DateTime startDateTime;
-
-    private void Start()
-    {
-        startDateTime = DateTime.Now;
-        playerOneDateTime = startDateTime;
-        playerTwoDateTime = startDateTime;
-    }
+    public DateTime playerOneDateTime;
+    public DateTime playerTwoDateTime;
+    public DateTime startDateTime;
 
     public void StartGame()
     {
         isGameStarted = true;
+        startDateTime = DateTime.Now;
     }
 
     private void Update()
     {
-        if (isGameStarted == false) {
+        if (isGameStarted == false) 
+        {
             return;
         }
         
@@ -44,15 +44,21 @@ public class TouchController : MonoBehaviour
 
     private void CheckWinner()
     {
+        if (isWinnerShowed)
+        {
+            return;
+        }
+        
         var milliseconds = playerOneDateTime.Subtract(playerTwoDateTime).TotalMilliseconds;
         if (milliseconds > 0)
         {
             testText2.text = "Время: " + milliseconds + "  \\ Выйграл PlayerOne";
-            
             playerOne.endAttackAnimationEvent += () =>
             {
                 playerTwo.SetAnimState("Hit", true);
             };
+            endGameUiController.ShowWinner(true);
+            isWinnerShowed = true;
         }
         else if(milliseconds < 0)
         {
@@ -61,16 +67,13 @@ public class TouchController : MonoBehaviour
             {
                 playerOne.SetAnimState("Hit", true);
             };
+            endGameUiController.ShowWinner(false);
+            isWinnerShowed = true;
         }
     }
 
     private void CheckCachedTouch(Touch[] touches)
     {
-        if (isPlayerTap == true)
-        {
-            return;
-        }
-        
 #if UNITY_EDITOR_WIN
         if (Input.GetMouseButtonDown(0))
         {
@@ -78,7 +81,7 @@ public class TouchController : MonoBehaviour
             if (mousePositionX < 960)
             {
                 isPlayerTap = true;
-                testText.text = "POS < 960 PlayerOne: " + mousePositionX;
+                //testText.text = "POS < 960 PlayerOne: " + mousePositionX;
                 playerOneDateTime = DateTime.Now;;
                 playerOne.SetAnimState("Attack", true);
             }
@@ -86,7 +89,7 @@ public class TouchController : MonoBehaviour
             if (mousePositionX > 960)
             {
                 isPlayerTap = true;
-                testText.text = "POS > 960 PlayerTwo: " + mousePositionX;
+                //testText.text = "POS > 960 PlayerTwo: " + mousePositionX;
                 playerTwoDateTime = DateTime.Now;;
                 playerTwo.SetAnimState("Attack", true);
             }
@@ -96,26 +99,33 @@ public class TouchController : MonoBehaviour
         {
             foreach (var touch in touches)
             {
-                Debug.Log("POS: " + touch.position);
                 if (touch.phase == TouchPhase.Began)
                 {
-                    if (touch.position.x < 960 && touchIdOne == -1)
+                    if (touch.position.x < 960 && touchIdOne == -1 && isLeftPlayerTap == false)
                     {
-                        isPlayerTap = true;
-                        testText.text = "POS < 960 PlayerOne: " + touch.position;
+                        isLeftPlayerTap = true;
+
+                        //testText.text = "POS < 960 PlayerOne: " + touch.position;
                         touchIdOne = touch.fingerId;
-                        playerOneDateTime = DateTime.Now;;
-                        playerOne.SetAnimState("Attack", true);
+                        playerOneDateTime = DateTime.Now;
+                        if (isRightPlayerTap == false)
+                        {
+                            playerOne.SetAnimState("Attack", true);
+                        }
                         continue;
                     }
 
-                    if (touch.position.x > 960 && touchIdTwo == -2)
+                    if (touch.position.x > 960 && touchIdTwo == -2 && isRightPlayerTap == false)
                     {
-                        isPlayerTap = true;
-                        testText.text = "POS > 960 PlayerTwo: " + touch.position;
+                        isRightPlayerTap = true;
+                        
+                        //testText2.text = "POS > 960 PlayerTwo: " + touch.position;
                         touchIdTwo = touch.fingerId;
                         playerTwoDateTime = DateTime.Now;;
-                        playerTwo.SetAnimState("Attack", true);
+                        if (isLeftPlayerTap == false)
+                        {
+                            playerTwo.SetAnimState("Attack", true);
+                        }
                         continue;
                     }
                 }

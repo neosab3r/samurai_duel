@@ -5,7 +5,6 @@ using UnityEngine;
 public class ImageModel : MonoBehaviour
 {
     private Tweener tweenerScale;
-    private Transform transform;
     private Vector3 startScale;
     public float TweenerScaleDuration;
     public float ScaleOffset;
@@ -14,7 +13,6 @@ public class ImageModel : MonoBehaviour
     public void StartTweener()
     {
         isStarted = true;
-        transform = gameObject.GetComponent<Transform>();
         startScale = transform.localScale;
         
         gameObject.SetActive(true);

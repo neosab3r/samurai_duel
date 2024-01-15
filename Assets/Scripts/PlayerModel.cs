@@ -8,10 +8,6 @@ public class PlayerModel : MonoBehaviour
     private bool isAnimationPlaying = false;
 
     public Action endAttackAnimationEvent;
-    private void Start()
-    {
-        
-    }
 
     private void Update()
     {

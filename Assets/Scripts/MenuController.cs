@@ -1,25 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class MenuController : MonoBehaviour
 {
-    [SerializeField] private Button buttonPlay;
-    void Start()
-    {
-        
-    }
+    [SerializeField] private ImageModel buttonPlay;
+    [SerializeField] private ImageModel buttonExit;
+    [SerializeField] private ImageModel imageSamuraiDuel;
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        
+        buttonPlay.StartTweener();
+        buttonExit.StartTweener();
+        //imageSamuraiDuel.StartTweener();
     }
 
     public void StartGame()
     {
         SceneManager.LoadScene("Shoot");
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 }
