@@ -22,6 +22,19 @@ public class TouchController : MonoBehaviour
     public DateTime playerTwoDateTime;
     public DateTime startDateTime;
 
+    private void Start()
+    {
+        playerTwo.endAttackAnimationEvent += () =>
+        {
+            playerOne.SetAnimState("Hit", true);
+        };
+        
+        playerOne.endAttackAnimationEvent += () =>
+        {
+            playerTwo.SetAnimState("Hit", true);
+        };
+    }
+
     public void StartGame()
     {
         isGameStarted = true;
@@ -53,20 +66,14 @@ public class TouchController : MonoBehaviour
         if (milliseconds > 0)
         {
             testText2.text = "Время: " + milliseconds + "  \\ Выйграл PlayerOne";
-            playerOne.endAttackAnimationEvent += () =>
-            {
-                playerTwo.SetAnimState("Hit", true);
-            };
+            
             endGameUiController.ShowWinner(true);
             isWinnerShowed = true;
         }
         else if(milliseconds < 0)
         {
             testText2.text = "Время: " + milliseconds + "  \\ Выйграл PlayerTwo";
-            playerTwo.endAttackAnimationEvent += () =>
-            {
-                playerOne.SetAnimState("Hit", true);
-            };
+            
             endGameUiController.ShowWinner(false);
             isWinnerShowed = true;
         }
@@ -75,24 +82,18 @@ public class TouchController : MonoBehaviour
     private void CheckCachedTouch(Touch[] touches)
     {
 #if UNITY_EDITOR_WIN
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
-            var mousePositionX = Input.mousePosition.x;
-            if (mousePositionX < 960)
-            {
-                isPlayerTap = true;
                 //testText.text = "POS < 960 PlayerOne: " + mousePositionX;
                 playerOneDateTime = DateTime.Now;;
                 playerOne.SetAnimState("Attack", true);
-            }
+        }
 
-            if (mousePositionX > 960)
-            {
-                isPlayerTap = true;
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
                 //testText.text = "POS > 960 PlayerTwo: " + mousePositionX;
                 playerTwoDateTime = DateTime.Now;;
                 playerTwo.SetAnimState("Attack", true);
-            }
         }
 #endif
         if (touches.Length > 0)
@@ -121,26 +122,11 @@ public class TouchController : MonoBehaviour
                         
                         //testText2.text = "POS > 960 PlayerTwo: " + touch.position;
                         touchIdTwo = touch.fingerId;
-                        playerTwoDateTime = DateTime.Now;;
+                        playerTwoDateTime = DateTime.Now;
                         if (isLeftPlayerTap == false)
                         {
                             playerTwo.SetAnimState("Attack", true);
                         }
-                        continue;
-                    }
-                }
-
-                if (touch.phase == TouchPhase.Ended)
-                {
-                    if (touch.fingerId == touchIdOne)
-                    {
-                        touchIdOne = -1;
-                        continue;
-                    }
-
-                    if (touch.fingerId == touchIdTwo)
-                    {
-                        touchIdTwo = -2;
                         continue;
                     }
                 }

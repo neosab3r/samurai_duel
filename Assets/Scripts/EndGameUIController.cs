@@ -23,10 +23,28 @@ namespace DefaultNamespace
         private IEnumerator WaitForShowWinnerUI(bool isLeftPlayerWin)
         {
             yield return new WaitForSecondsRealtime(2);
-            
+            Debug.Log($"IsLeftPlayerWin: {isLeftPlayerWin} -- Set mainPanel.SetActive(true)");
             mainPanel.SetActive(true);
-            leftPlayerTimeTouchText.text = touchController.playerOneDateTime.Millisecond + " мс";
-            rightPlayerTimeTouchText.text = touchController.playerTwoDateTime.Millisecond + " мс";
+            var playerOneMilliseconds = (int)(touchController.playerOneDateTime - touchController.startDateTime).TotalMilliseconds;
+            var playerTwoMilliseconds = (int)(touchController.playerTwoDateTime - touchController.startDateTime).TotalMilliseconds;
+
+            if (playerOneMilliseconds < 0)
+            {
+                leftPlayerTimeTouchText.text = "--- мс";
+            }
+            else
+            {
+                leftPlayerTimeTouchText.text = playerOneMilliseconds + " мс";
+            }
+            
+            if (playerTwoMilliseconds < 0)
+            {
+                rightPlayerTimeTouchText.text = "--- мс";
+            }
+            else
+            {
+                rightPlayerTimeTouchText.text = playerTwoMilliseconds  + " мс";
+            }
 
             if (isLeftPlayerWin)
             {
